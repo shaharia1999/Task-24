@@ -1,4 +1,3 @@
-// pages/editor.tsx
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -9,7 +8,7 @@ const EditorPage = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const editorRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const searchParams = useSearchParams(); // Correct hook usage
+  const searchParams = useSearchParams(); // Use correct hook
 
   useEffect(() => {
     const id = searchParams.get('id');
@@ -51,7 +50,9 @@ const EditorPage = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">{editingId ? 'Edit Document' : 'Create New Document'}</h1>
+      <h1 className="text-2xl font-bold mb-4">
+        {editingId ? 'Edit Document' : 'Create New Document'}
+      </h1>
 
       <div className="mb-4">
         <button
@@ -78,15 +79,11 @@ const EditorPage = () => {
         ref={editorRef}
         contentEditable
         className="w-full h-64 p-2 border border-gray-300 rounded mb-4"
-       
         onInput={handleContentChange}
-        // dangerouslySetInnerHTML={{ __html: content }}
-        
       />
 
       <button
         onClick={saveDocument}
-        
         className="px-4 py-2 border border-blue-300 rounded bg-blue-100 text-blue-600"
       >
         {editingId ? 'Save Document' : 'Create Document'}
