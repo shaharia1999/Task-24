@@ -81,7 +81,7 @@ const EditorPage = () => {
        
         onInput={handleContentChange}
         // dangerouslySetInnerHTML={{ __html: content }}
-        placeholder="Start typing..."
+        
       />
 
       <button
