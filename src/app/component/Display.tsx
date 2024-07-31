@@ -99,7 +99,7 @@ const EditorPage = () => {
         contentEditable
         className="w-full h-64 p-2 border border-gray-300 rounded mb-4"
         onInput={handleContentChange}
-        placeholder="Start typing..."
+        // placeholder="Start typing..."
       >
         {content}
       </div>
