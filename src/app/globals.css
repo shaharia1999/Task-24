@@ -26,4 +26,9 @@ body {
     text-wrap: balance;
   }
 }
-
+.resizable{
+  border: 2px solid red;
+}
+.resizable:hover{
+  cursor: e-resize;
+}

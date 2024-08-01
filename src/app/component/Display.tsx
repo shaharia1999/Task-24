@@ -113,6 +113,38 @@ const EditorPage = () => {
     }
   }, [content]);
 
+  useEffect(() => {
+    const handleMouseDown = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (target.classList.contains('resizable')) {
+        const img = target as HTMLImageElement;
+        const startX = event.clientX;
+        const startY = event.clientY;
+        const startWidth = img.offsetWidth;
+        const startHeight = img.offsetHeight;
+
+        const handleMouseMove = (e: MouseEvent) => {
+          img.style.width = `${startWidth + (e.clientX - startX)}px`;
+          img.style.height = `${startHeight + (e.clientY - startY)}px`;
+        };
+
+        const handleMouseUp = () => {
+          document.removeEventListener('mousemove', handleMouseMove);
+          document.removeEventListener('mouseup', handleMouseUp);
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+      }
+    };
+
+    document.addEventListener('mousedown', handleMouseDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handleMouseDown);
+    };
+  }, []);
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">
@@ -177,9 +209,9 @@ const EditorPage = () => {
           border: 4px solid #ddd;
           box-sizing: border-box;
         }
-           .resizable:hover {
-    border: 4px solid green;
-  }
+        .resizable:hover {
+          border: 4px solid green;
+        }
         .resizable::after {
           content: '';
           position: absolute;
@@ -191,36 +223,6 @@ const EditorPage = () => {
           cursor: se-resize;
         }
       `}</style>
-
-      {/* Script for Image resizer */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            document.addEventListener('mousedown', function(event) {
-              if (event.target && event.target.matches('.resizable')) {
-                const img = event.target;
-                const startX = event.clientX;
-                const startY = event.clientY;
-                const startWidth = img.offsetWidth;
-                const startHeight = img.offsetHeight;
-
-                function onMouseMove(e) {
-                  img.style.width = \`\${startWidth + (e.clientX - startX)}px\`;
-                  img.style.height = \`\${startHeight + (e.clientY - startY)}px\`;
-                }
-
-                function onMouseUp() {
-                  document.removeEventListener('mousemove', onMouseMove);
-                  document.removeEventListener('mouseup', onMouseUp);
-                }
-
-                document.addEventListener('mousemove', onMouseMove);
-                document.addEventListener('mouseup', onMouseUp);
-              }
-            });
-          `,
-        }}
-      />
     </div>
   );
 };
