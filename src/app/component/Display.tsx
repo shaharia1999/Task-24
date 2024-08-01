@@ -60,6 +60,7 @@ const EditorPage = () => {
       const img = document.createElement('img');
       img.src = imageSrc;
       img.style.maxWidth = '100%';
+      img.style.border = '2px solid black';
       img.style.maxHeight = 'auto';
       img.classList.add('resizable');
       editorRef.current.appendChild(img);
@@ -169,11 +170,16 @@ const EditorPage = () => {
         {editingId ? 'Save Document' : 'Create Document'}
       </button>
 
-{/* Css for Image resize */}
+      {/* CSS for Image resize */}
       <style jsx>{`
         .resizable {
           position: relative;
+          border: 4px solid #ddd;
+          box-sizing: border-box;
         }
+           .resizable:hover {
+    border: 4px solid green;
+  }
         .resizable::after {
           content: '';
           position: absolute;
@@ -186,7 +192,7 @@ const EditorPage = () => {
         }
       `}</style>
 
-   {/* This Script For Image resizer */}
+      {/* Script for Image resizer */}
       <script
         dangerouslySetInnerHTML={{
           __html: `
