@@ -188,7 +188,7 @@ const EditorPage = () => {
       <div
         ref={editorRef}
         contentEditable
-        className="w-full h-[60vh] p-2 border border-gray-300 rounded mb-4"
+        className="w-full h-[60vh]  border border-gray-300 rounded  text-left flex flex-wrap"
         onInput={handleContentChange}
         // placeholder="Start typing..."
       >
@@ -197,7 +197,7 @@ const EditorPage = () => {
 
       <button
         onClick={saveDocument}
-        className="px-4 py-2 border border-blue-300 rounded bg-blue-100 text-blue-600"
+        className="px-4 py-2 border border-blue-300 rounded bg-blue-100 text-blue-600 justify-center text-justify"
       >
         {editingId ? 'Save Document' : 'Create Document'}
       </button>
@@ -217,8 +217,7 @@ const EditorPage = () => {
           position: absolute;
           right: 0;
           bottom: 0;
-          width: 20px;
-          height: 20px;
+         
           background: rgba(0, 0, 0, 0.5);
           cursor: se-resize;
         }
