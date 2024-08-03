@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 const EditorPage = () => {
   const [content, setContent] = useState<string>('');
-  const [content2, setContent2] = useState<string>('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [activeFormat, setActiveFormat] = useState<{ [key: string]: boolean }>({
     bold: false,
@@ -33,13 +32,19 @@ const EditorPage = () => {
     }
   }, [searchParams, router]);
 
+  const handleContentChange = () => {
+    if (editorRef.current) {
+      setContent(editorRef.current.innerHTML);
+      updateActiveFormat();
+    }
+  };
+
   const saveDocument = () => {
-    setContent(content2)
     if (editingId) {
-      localStorage.setItem(`document-${editingId}`, content2);
+      localStorage.setItem(`document-${editingId}`, content);
     } else {
       const id = Date.now().toString();
-      localStorage.setItem(`document-${id}`, content2);
+      localStorage.setItem(`document-${id}`, content);
       router.push(`/editor?id=${id}`);
     }
     router.push('/');
@@ -76,40 +81,6 @@ const EditorPage = () => {
     }
   };
 
-  const handleContentChange = () => {
-    if (editorRef.current) {
-      // Normalize content and remove unnecessary nodes
-      normalizeContent(editorRef.current);
-      setContent2(editorRef.current.innerHTML);
-      updateActiveFormat();
-    }
-  };
-
-  const normalizeContent = (element: HTMLElement) => {
-    // Normalize the text nodes
-    element.normalize();
-
-    // Remove empty text nodes and trim white spaces
-    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
-    let node;
-    while (node = walker.nextNode()) {
-      if (!node.nodeValue?.trim()) {
-        node.parentNode?.removeChild(node);
-      }
-    }
-  };
-
-  const setCursorToEnd = () => {
-    if (editorRef.current) {
-      const range = document.createRange();
-      const selection = window.getSelection();
-      range.selectNodeContents(editorRef.current);
-      range.collapse(false);
-      selection?.removeAllRanges();
-      selection?.addRange(range);
-    }
-  };
-
   const updateActiveFormat = () => {
     const isBold = document.queryCommandState('bold');
     const isItalic = document.queryCommandState('italic');
@@ -129,6 +100,17 @@ const EditorPage = () => {
       updateActiveFormat();
     }
   }, [content]);
+
+  const setCursorToEnd = () => {
+    if (editorRef.current) {
+      const range = document.createRange();
+      const selection = window.getSelection();
+      range.selectNodeContents(editorRef.current);
+      range.collapse(false);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }
+  };
 
   useEffect(() => {
     const handleMouseDown = (event: MouseEvent) => {
@@ -161,6 +143,20 @@ const EditorPage = () => {
       document.removeEventListener('mousedown', handleMouseDown);
     };
   }, []);
+
+  const handleKeyUp = useCallback(() => {
+    saveCursorPosition();
+    updateActiveFormat();
+  }, []);
+
+  const saveCursorPosition = () => {
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      cursorPositionRef.current = selection.getRangeAt(0);
+    }
+  };
+
+  const cursorPositionRef = useRef<Range | null>(null);
 
   return (
     <div className="p-4">
@@ -207,13 +203,13 @@ const EditorPage = () => {
         contentEditable
         className="w-full h-[60vh] border border-gray-300 rounded text-left flex flex-wrap"
         onInput={handleContentChange}
+        onKeyUp={handleKeyUp}
       >
-        {content}
       </div>
 
       <button
         onClick={saveDocument}
-        className="px-4 py-2 border border-blue-300 rounded bg-blue-100 text-blue-600"
+        className="px-4 py-2 border border-blue-300 rounded bg-blue-100 text-blue-600 justify-center text-justify"
       >
         {editingId ? 'Save Document' : 'Create Document'}
       </button>
@@ -233,6 +229,8 @@ const EditorPage = () => {
           position: absolute;
           right: 0;
           bottom: 0;
+          width: 10px;
+          height: 10px;
           background: rgba(0, 0, 0, 0.5);
           cursor: se-resize;
         }
